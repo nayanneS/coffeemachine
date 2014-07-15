@@ -7,20 +7,23 @@ import net.compor.frameworks.jcf.api.ComporFacade;
 
 public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine {
 
-	private int totalcents= 0;
+	
 	private ComponentsFactory Factory;
+	private int inteiro;
+	private int centavos;
 	
 	public MyCoffeeMachine(ComponentsFactory factory) {
+		this.centavos=0;
+		this.inteiro=0;
 		this.Factory = factory;
 		this.Factory.getDisplay().info("Insert coins and select a drink!");
 		
 	}
 
 	public void insertCoin(Coin coin) {
-		// TODO Auto-generated method stub
-		 totalcents += coin.getValue();
-		 int inteiro = totalcents/100;
-		 int centavos =totalcents%100;
+		
+		 inteiro += coin.getValue()/100;
+		 centavos += coin.getValue()%100;
 		
 		 
 		 this.Factory.getDisplay().info("Total: US$"+" "+ inteiro+"."+ centavos); 
