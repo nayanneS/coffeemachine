@@ -34,6 +34,13 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine {
 		
 		
 	}
+
+	public void cancel() {
+		if(this.inteiro == 0){
+			throw new CoffeeMachineException("Ausencia de moedas.");
+		}
+		
+	}
 	
 	
 	
