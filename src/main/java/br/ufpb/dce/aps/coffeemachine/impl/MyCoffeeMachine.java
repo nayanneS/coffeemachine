@@ -114,7 +114,12 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine {
 			
 			Factory.getDisplay().info(Messages.INSERT_COINS);
 			
+			
+			this.lista.clear();
+			
+		
 		}
+		
 		
 		
 	}
