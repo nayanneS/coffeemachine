@@ -105,13 +105,18 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine {
 			Factory.getCupDispenser().contains(1);
 			Factory.getWaterDispenser().contains(1.6);
 			if (Factory.getCoffeePowderDispenser().contains(1) == false) {
-
 				Factory.getDisplay().warn(Messages.OUT_OF_COFFEE_POWDER);
 				retirarmoedas(Factory);
 				this.Factory.getDisplay().info(Messages.INSERT_COINS);
 				return;
 			}
-			Factory.getSugarDispenser().contains(1.8);
+			if( !Factory.getSugarDispenser().contains(1)){
+				Factory.getDisplay().warn(Messages.OUT_OF_SUGAR);
+				retirarmoedas(Factory);
+				this.Factory.getDisplay().info(Messages.INSERT_COINS);
+				return;
+				
+			}
 
 			Factory.getDisplay().info(Messages.MIXING);
 			Factory.getCoffeePowderDispenser().release(1.9);
