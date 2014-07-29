@@ -73,54 +73,61 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine {
 	}
 
 	public void select(Drink drink) {
-		switch (drink){
-		case BLACK :
-		
-			
+
+		switch (drink) {
+		case BLACK:
+
 			Factory.getCupDispenser().contains(1);
-			Factory.getWaterDispenser().contains(anyDouble());
-			Factory.getCoffeePowderDispenser().contains(anyDouble());
-			
+			Factory.getWaterDispenser().contains(1.5);
+			if (!Factory.getCoffeePowderDispenser().contains(0.1)) {
+
+				Factory.getDisplay().warn(Messages.OUT_OF_COFFEE_POWDER);
+				retirarmoedas(Factory);
+				this.Factory.getDisplay().info(Messages.INSERT_COINS);
+				return;
+			}
+
 			Factory.getDisplay().info(Messages.MIXING);
-			Factory.getCoffeePowderDispenser().release(anyDouble());
-			Factory.getWaterDispenser().release(anyDouble());
-			
+			Factory.getCoffeePowderDispenser().release(1.2);
+			Factory.getWaterDispenser().release(1.0);
+
 			Factory.getDisplay().info(Messages.RELEASING);
 			Factory.getCupDispenser().release(1);
-			Factory.getDrinkDispenser().release(anyDouble());
+			Factory.getDrinkDispenser().release(1.4);
 			Factory.getDisplay().info(Messages.TAKE_DRINK);
-			
-			
+
 			Factory.getDisplay().info(Messages.INSERT_COINS);
-		
-		break;
-		
-		case BLACK_SUGAR : 
-			
+
+			break;
+
+		case BLACK_SUGAR:
+
 			Factory.getCupDispenser().contains(1);
-			Factory.getWaterDispenser().contains(anyDouble());
-			Factory.getCoffeePowderDispenser().contains(anyDouble());
-			Factory.getSugarDispenser().contains(anyDouble());
-			
+			Factory.getWaterDispenser().contains(1.6);
+			if (Factory.getCoffeePowderDispenser().contains(1) == false) {
+
+				Factory.getDisplay().warn(Messages.OUT_OF_COFFEE_POWDER);
+				retirarmoedas(Factory);
+				this.Factory.getDisplay().info(Messages.INSERT_COINS);
+				return;
+			}
+			Factory.getSugarDispenser().contains(1.8);
+
 			Factory.getDisplay().info(Messages.MIXING);
-			Factory.getCoffeePowderDispenser().release(anyDouble());
-			Factory.getWaterDispenser().release(anyDouble());
-			Factory.getSugarDispenser().release(anyDouble());
-			
+			Factory.getCoffeePowderDispenser().release(1.9);
+			Factory.getWaterDispenser().release(1.10);
+			Factory.getSugarDispenser().release(1.11);
+
 			Factory.getDisplay().info(Messages.RELEASING);
 			Factory.getCupDispenser().release(1);
-			Factory.getDrinkDispenser().release(anyDouble());
+			Factory.getDrinkDispenser().release(0.9);
 			Factory.getDisplay().info(Messages.TAKE_DRINK);
-			
+
 			Factory.getDisplay().info(Messages.INSERT_COINS);
-			
-			
+
 			this.lista.clear();
-			
-		
 		}
-		
-		
-		
+
 	}
+
 }
