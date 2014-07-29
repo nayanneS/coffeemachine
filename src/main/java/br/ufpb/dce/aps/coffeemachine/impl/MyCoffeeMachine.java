@@ -77,7 +77,13 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine {
 		switch (drink) {
 		case BLACK:
 
-			Factory.getCupDispenser().contains(1);
+			if( !Factory.getCupDispenser().contains(1)){
+				Factory.getDisplay().warn(Messages.OUT_OF_CUP);
+				retirarmoedas(Factory);
+				this.Factory.getDisplay().info(Messages.INSERT_COINS);
+				return;
+				
+			}
 			if( !Factory.getWaterDispenser().contains(1)){
 				Factory.getDisplay().warn(Messages.OUT_OF_WATER);
 				retirarmoedas(Factory);
@@ -108,7 +114,13 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine {
 
 		case BLACK_SUGAR:
 
-			Factory.getCupDispenser().contains(1);
+			if( !Factory.getCupDispenser().contains(1)){
+				Factory.getDisplay().warn(Messages.OUT_OF_CUP);
+				retirarmoedas(Factory);
+				this.Factory.getDisplay().info(Messages.INSERT_COINS);
+				return;
+				
+			}
 			if( !Factory.getWaterDispenser().contains(1)){
 				Factory.getDisplay().warn(Messages.OUT_OF_WATER);
 				retirarmoedas(Factory);
