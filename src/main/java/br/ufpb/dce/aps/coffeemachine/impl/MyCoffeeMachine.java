@@ -78,7 +78,13 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine {
 		case BLACK:
 
 			Factory.getCupDispenser().contains(1);
-			Factory.getWaterDispenser().contains(1.5);
+			if( !Factory.getWaterDispenser().contains(1)){
+				Factory.getDisplay().warn(Messages.OUT_OF_WATER);
+				retirarmoedas(Factory);
+				this.Factory.getDisplay().info(Messages.INSERT_COINS);
+				return;
+				
+			}
 			if (!Factory.getCoffeePowderDispenser().contains(0.1)) {
 
 				Factory.getDisplay().warn(Messages.OUT_OF_COFFEE_POWDER);
@@ -103,7 +109,13 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine {
 		case BLACK_SUGAR:
 
 			Factory.getCupDispenser().contains(1);
-			Factory.getWaterDispenser().contains(1.6);
+			if( !Factory.getWaterDispenser().contains(1)){
+				Factory.getDisplay().warn(Messages.OUT_OF_WATER);
+				retirarmoedas(Factory);
+				this.Factory.getDisplay().info(Messages.INSERT_COINS);
+				return;
+				
+			}
 			if (Factory.getCoffeePowderDispenser().contains(1) == false) {
 				Factory.getDisplay().warn(Messages.OUT_OF_COFFEE_POWDER);
 				retirarmoedas(Factory);
