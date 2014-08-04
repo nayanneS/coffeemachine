@@ -20,8 +20,9 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine {
 	private int inteiro;
 	private int centavos;
 	private CashBox cb;
-	private List<Coin> lista;
+	private List<Coin> lista, ltroco;
 	private Drink bebida;
+	private final int cafe = 35;
 
 	public MyCoffeeMachine(ComponentsFactory factory) {
 		this.centavos = 0;
@@ -30,6 +31,7 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine {
 		this.Factory.getDisplay().info("Insert coins and select a drink!");
 		this.cb = Factory.getCashBox();
 		this.lista = new ArrayList<Coin>();
+		this.ltroco = new ArrayList<Coin>();
 	}
 
 	public void insertCoin(Coin coin) {
@@ -72,24 +74,54 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine {
 
 	}
 
+	public List<Coin> retornarTroco(int troco) {
+		for (Coin coin : Coin.reverse()) {
+			while (coin.getValue() <= troco) {
+				Factory.getCashBox().release(coin);
+				this.ltroco.add(coin);
+				troco = troco - coin.getValue();
+			}
+		}
+		return ltroco;
+	}
+
+	public void planejamento(int troco) {
+		for (Coin coin : Coin.reverse()) {
+			if (coin.getValue() <= troco) {
+				Factory.getCashBox().count(coin);
+				troco = troco - coin.getValue();
+			}
+
+		}
+	}
+
+	public int calculaTroco() {
+		int contador = 0;
+		for (Coin c : this.lista) {
+			contador = +c.getValue();
+		}
+		return contador - this.cafe;
+
+	}
+
 	public void select(Drink drink) {
 
 		switch (drink) {
 		case BLACK:
 
-			if( !Factory.getCupDispenser().contains(1)){
+			if (!Factory.getCupDispenser().contains(1)) {
 				Factory.getDisplay().warn(Messages.OUT_OF_CUP);
 				retirarmoedas(Factory);
 				this.Factory.getDisplay().info(Messages.INSERT_COINS);
 				return;
-				
+
 			}
-			if( !Factory.getWaterDispenser().contains(1)){
+			if (!Factory.getWaterDispenser().contains(1)) {
 				Factory.getDisplay().warn(Messages.OUT_OF_WATER);
 				retirarmoedas(Factory);
 				this.Factory.getDisplay().info(Messages.INSERT_COINS);
 				return;
-				
+
 			}
 			if (!Factory.getCoffeePowderDispenser().contains(0.1)) {
 
@@ -114,19 +146,19 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine {
 
 		case BLACK_SUGAR:
 
-			if( !Factory.getCupDispenser().contains(1)){
+			if (!Factory.getCupDispenser().contains(1)) {
 				Factory.getDisplay().warn(Messages.OUT_OF_CUP);
 				retirarmoedas(Factory);
 				this.Factory.getDisplay().info(Messages.INSERT_COINS);
 				return;
-				
+
 			}
-			if( !Factory.getWaterDispenser().contains(1)){
+			if (!Factory.getWaterDispenser().contains(1)) {
 				Factory.getDisplay().warn(Messages.OUT_OF_WATER);
 				retirarmoedas(Factory);
 				this.Factory.getDisplay().info(Messages.INSERT_COINS);
 				return;
-				
+
 			}
 			if (!Factory.getCoffeePowderDispenser().contains(1)) {
 				Factory.getDisplay().warn(Messages.OUT_OF_COFFEE_POWDER);
@@ -134,12 +166,12 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine {
 				this.Factory.getDisplay().info(Messages.INSERT_COINS);
 				return;
 			}
-			if( !Factory.getSugarDispenser().contains(1)){
+			if (!Factory.getSugarDispenser().contains(1)) {
 				Factory.getDisplay().warn(Messages.OUT_OF_SUGAR);
 				retirarmoedas(Factory);
 				this.Factory.getDisplay().info(Messages.INSERT_COINS);
 				return;
-				
+
 			}
 
 			Factory.getDisplay().info(Messages.MIXING);
@@ -156,33 +188,58 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine {
 
 			this.lista.clear();
 			break;
-			
-			
-		case WHITE: 
-			
+
+		case WHITE:
+
 			Factory.getCupDispenser().contains(1);
 			Factory.getWaterDispenser().contains(1);
 			Factory.getCoffeePowderDispenser().contains(1);
 			Factory.getCreamerDispenser().contains(1.2);
-		
+
 			Factory.getDisplay().info(Messages.MIXING);
 			Factory.getCoffeePowderDispenser().release(1.9);
 			Factory.getWaterDispenser().release(1.10);
 			Factory.getCreamerDispenser().release(1.8);
-			
+
 			Factory.getDisplay().info(Messages.RELEASING);
 			Factory.getCupDispenser().release(1);
 			Factory.getDrinkDispenser().release(0.9);
 			Factory.getDisplay().info(Messages.TAKE_DRINK);
+
+			Factory.getDisplay().info(Messages.INSERT_COINS);
+
+			break;
+
+		case WHITE_SUGAR:
+
+			Factory.getCupDispenser().contains(1);
+			Factory.getWaterDispenser().contains(1);
+			Factory.getCoffeePowderDispenser().contains(1);
+			Factory.getCreamerDispenser().contains(1.2);
+			Factory.getSugarDispenser().contains(1.1);
+
+			planejamento(calculaTroco());
+
+			Factory.getDisplay().info(Messages.MIXING);
+			Factory.getCoffeePowderDispenser().release(1.9);
+			Factory.getWaterDispenser().release(1.10);
+			Factory.getCreamerDispenser().release(1.8);
+			Factory.getSugarDispenser().release(1.0);
+
+			Factory.getDisplay().info(Messages.RELEASING);
+			Factory.getCupDispenser().release(1);
+			Factory.getDrinkDispenser().release(0.9);
+			Factory.getDisplay().info(Messages.TAKE_DRINK);
+
+			retornarTroco(calculaTroco());
 			
 			Factory.getDisplay().info(Messages.INSERT_COINS);
+
 			
-		break;	
-		
-		
+
+			break;
+
 		}
-		
-		
 
 	}
 
