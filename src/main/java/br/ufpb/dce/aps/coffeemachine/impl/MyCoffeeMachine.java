@@ -45,7 +45,7 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine {
 				"Total: US$" + " " + inteiro + "." + centavos);
 		this.lista.add(coin);
 	}
-
+	
 	public void cancel() {
 		if (this.inteiro == 0 && this.centavos == 0) {
 			throw new CoffeeMachineException("Ausencia de moedas.");
@@ -74,41 +74,50 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine {
 
 	}
 
+
 	public List<Coin> retornarTroco(int troco) {
 		for (Coin coin : Coin.reverse()) {
 			while (coin.getValue() <= troco) {
 				Factory.getCashBox().release(coin);
 				this.ltroco.add(coin);
-				troco = troco - coin.getValue();
+				troco -= coin.getValue();
 			}
 		}
 		return ltroco;
 	}
+	
 
-	public void planejamento(int troco) {
+	public boolean planejamento(int troco) {
 		for (Coin coin : Coin.reverse()) {
-			if (coin.getValue() <= troco) {
-				Factory.getCashBox().count(coin);
-				troco = troco - coin.getValue();
+			if (coin.getValue() <= troco && this.Factory.getCashBox().count(coin) > 0) {
+				
+				troco -= coin.getValue();
 			}
 
 		}
+		return troco == 0;
 	}
+	
 
 	public int calculaTroco() {
 		int contador = 0;
 		for (Coin c : this.lista) {
-			contador = +c.getValue();
+			contador += c.getValue();
 		}
 		return contador - this.cafe;
 
 	}
-
+	
 	public void select(Drink drink) {
 
 		switch (drink) {
 		case BLACK:
-
+			if (calculaTroco() < 0) {
+				Factory.getDisplay().warn(Messages.NO_ENOUGHT_MONEY);
+				this.retirarmoedas(Factory);
+				this.Factory.getDisplay().info(Messages.INSERT_COINS);
+				return;
+			}	
 			if (!Factory.getCupDispenser().contains(1)) {
 				Factory.getDisplay().warn(Messages.OUT_OF_CUP);
 				retirarmoedas(Factory);
@@ -131,6 +140,7 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine {
 				return;
 			}
 
+			
 			Factory.getDisplay().info(Messages.MIXING);
 			Factory.getCoffeePowderDispenser().release(1.2);
 			Factory.getWaterDispenser().release(1.0);
@@ -145,13 +155,16 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine {
 			break;
 
 		case BLACK_SUGAR:
-
+			if (calculaTroco() < 0) {
+				Factory.getDisplay().warn(Messages.NO_ENOUGHT_MONEY);
+				this.retirarmoedas(Factory);
+				return;
+			}
 			if (!Factory.getCupDispenser().contains(1)) {
 				Factory.getDisplay().warn(Messages.OUT_OF_CUP);
 				retirarmoedas(Factory);
 				this.Factory.getDisplay().info(Messages.INSERT_COINS);
 				return;
-
 			}
 			if (!Factory.getWaterDispenser().contains(1)) {
 				Factory.getDisplay().warn(Messages.OUT_OF_WATER);
@@ -190,12 +203,20 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine {
 			break;
 
 		case WHITE:
+			
+			if (calculaTroco() < 0) {
+				Factory.getDisplay().warn(Messages.NO_ENOUGHT_MONEY);
+				this.retirarmoedas(Factory);
+				return;
+				}
+
 
 			Factory.getCupDispenser().contains(1);
 			Factory.getWaterDispenser().contains(1);
 			Factory.getCoffeePowderDispenser().contains(1);
 			Factory.getCreamerDispenser().contains(1.2);
-
+			
+			
 			Factory.getDisplay().info(Messages.MIXING);
 			Factory.getCoffeePowderDispenser().release(1.9);
 			Factory.getWaterDispenser().release(1.10);
@@ -211,13 +232,20 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine {
 			break;
 
 		case WHITE_SUGAR:
-
+			
+			if (calculaTroco() < 0) {
+				Factory.getDisplay().warn(Messages.NO_ENOUGHT_MONEY);
+				this.retirarmoedas(Factory);
+				return;
+			}
+			
 			Factory.getCupDispenser().contains(1);
 			Factory.getWaterDispenser().contains(1);
 			Factory.getCoffeePowderDispenser().contains(1);
 			Factory.getCreamerDispenser().contains(1.2);
 			Factory.getSugarDispenser().contains(1.1);
-
+			
+		
 			planejamento(calculaTroco());
 
 			Factory.getDisplay().info(Messages.MIXING);
@@ -235,12 +263,14 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine {
 			
 			Factory.getDisplay().info(Messages.INSERT_COINS);
 
-			
-
+	
 			break;
 
 		}
-
+		
+	
 	}
-
 }
+
+
+
