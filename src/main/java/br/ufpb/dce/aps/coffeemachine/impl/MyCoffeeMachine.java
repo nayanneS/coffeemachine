@@ -57,6 +57,7 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine {
 
 		this.Factory.getDisplay().info(Messages.INSERT_COINS);
 
+		this.lista.clear(); 
 	}
 
 	private void retirarmoedas(ComponentsFactory factory) {
@@ -90,13 +91,14 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine {
 	public boolean planejamento(int troco) {
 		for (Coin coin : Coin.reverse()) {
 			if (coin.getValue() <= troco && this.Factory.getCashBox().count(coin) > 0) {
-				
 				troco -= coin.getValue();
 			}
 
 		}
 		return troco == 0;
+		
 	}
+		
 	
 
 	public int calculaTroco() {
@@ -139,16 +141,25 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine {
 				this.Factory.getDisplay().info(Messages.INSERT_COINS);
 				return;
 			}
+			if (!planejamento(calculaTroco())){
+				Factory.getDisplay().warn(Messages.NO_ENOUGHT_CHANGE);
+				this.retirarmoedas(Factory);
+				this.Factory.getDisplay().info(Messages.INSERT_COINS);
+				return;
+			}
 
 			
 			Factory.getDisplay().info(Messages.MIXING);
 			Factory.getCoffeePowderDispenser().release(1.2);
 			Factory.getWaterDispenser().release(1.0);
+			
 
 			Factory.getDisplay().info(Messages.RELEASING);
 			Factory.getCupDispenser().release(1);
 			Factory.getDrinkDispenser().release(1.4);
 			Factory.getDisplay().info(Messages.TAKE_DRINK);
+			
+			retornarTroco(calculaTroco());
 
 			Factory.getDisplay().info(Messages.INSERT_COINS);
 
@@ -186,24 +197,32 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine {
 				return;
 
 			}
+			if (!planejamento(calculaTroco())){
+				Factory.getDisplay().warn(Messages.NO_ENOUGHT_CHANGE);
+				this.retirarmoedas(Factory);
+				this.Factory.getDisplay().info(Messages.INSERT_COINS);
+				return;
+			}
 
 			Factory.getDisplay().info(Messages.MIXING);
 			Factory.getCoffeePowderDispenser().release(1.9);
 			Factory.getWaterDispenser().release(1.10);
 			Factory.getSugarDispenser().release(1.11);
+			
 
 			Factory.getDisplay().info(Messages.RELEASING);
 			Factory.getCupDispenser().release(1);
 			Factory.getDrinkDispenser().release(0.9);
 			Factory.getDisplay().info(Messages.TAKE_DRINK);
 
+			retornarTroco(calculaTroco());
+			
 			Factory.getDisplay().info(Messages.INSERT_COINS);
 
 			this.lista.clear();
 			break;
 
 		case WHITE:
-			
 			if (calculaTroco() < 0) {
 				Factory.getDisplay().warn(Messages.NO_ENOUGHT_MONEY);
 				this.retirarmoedas(Factory);
@@ -216,6 +235,12 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine {
 			Factory.getCoffeePowderDispenser().contains(1);
 			Factory.getCreamerDispenser().contains(1.2);
 			
+			if (!planejamento(calculaTroco())){
+				Factory.getDisplay().warn(Messages.NO_ENOUGHT_CHANGE);
+				this.retirarmoedas(Factory);
+				this.Factory.getDisplay().info(Messages.INSERT_COINS);
+				return;
+			}
 			
 			Factory.getDisplay().info(Messages.MIXING);
 			Factory.getCoffeePowderDispenser().release(1.9);
@@ -226,7 +251,9 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine {
 			Factory.getCupDispenser().release(1);
 			Factory.getDrinkDispenser().release(0.9);
 			Factory.getDisplay().info(Messages.TAKE_DRINK);
-
+			
+			retornarTroco(calculaTroco());
+			
 			Factory.getDisplay().info(Messages.INSERT_COINS);
 
 			break;
@@ -234,7 +261,7 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine {
 		case WHITE_SUGAR:
 			
 			if (calculaTroco() < 0) {
-				Factory.getDisplay().warn(Messages.NO_ENOUGHT_MONEY);
+				Factory.getDisplay().warn(Messages.NO_ENOUGHT_CHANGE);
 				this.retirarmoedas(Factory);
 				return;
 			}
@@ -246,7 +273,12 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine {
 			Factory.getSugarDispenser().contains(1.1);
 			
 		
-			planejamento(calculaTroco());
+			if (!planejamento(calculaTroco())){
+				Factory.getDisplay().warn(Messages.NO_ENOUGHT_MONEY);
+				this.retirarmoedas(Factory);
+				this.Factory.getDisplay().info(Messages.INSERT_COINS);
+				return;
+			}
 
 			Factory.getDisplay().info(Messages.MIXING);
 			Factory.getCoffeePowderDispenser().release(1.9);
@@ -266,9 +298,10 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine {
 	
 			break;
 
+			
 		}
 		
-	
+		this.lista.clear(); 
 	}
 }
 
