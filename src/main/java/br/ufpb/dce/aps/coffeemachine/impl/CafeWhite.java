@@ -4,6 +4,8 @@ import br.ufpb.dce.aps.coffeemachine.ComponentsFactory;
 import br.ufpb.dce.aps.coffeemachine.Dispenser;
 import br.ufpb.dce.aps.coffeemachine.Display;
 import br.ufpb.dce.aps.coffeemachine.Messages;
+import br.ufpb.dce.aps.coffeemachine.DrinkDispenser;
+
 
 public class CafeWhite extends Cafes {
 			
@@ -21,11 +23,14 @@ public class CafeWhite extends Cafes {
 	}
 	
 	public void prepararCafe(MyCoffeeMachine meucafe, ComponentsFactory factory){
+			 
 			if (meucafe.calculaTroco() < 0) {
 				factory.getDisplay().warn(Messages.NO_ENOUGHT_MONEY);
 				meucafe.retirarMoedas(factory);
 				return;
 			}
+			
+			
 			factory.getCupDispenser().contains(1);
 			factory.getWaterDispenser().contains(1);
 			factory.getCoffeePowderDispenser().contains(1);

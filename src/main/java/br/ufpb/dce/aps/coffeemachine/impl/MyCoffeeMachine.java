@@ -24,7 +24,7 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine {
 	private int inteiro;
 	private int centavos;
 	private CashBox cb;
-	private List<Coin> lista, ltroco;
+	private List<Coin> lista, ltroco, troco;
 	private Drink bebida;
 	private final int cafe = 35;
 
@@ -36,6 +36,7 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine {
 		this.cb = Factory.getCashBox();
 		this.lista = new ArrayList<Coin>();
 		this.ltroco = new ArrayList<Coin>();
+		this.troco = new ArrayList<Coin>();
 	}
 
 	public void insertCoin(Coin coin) {
@@ -79,27 +80,27 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine {
 	 }
 	
 	
-	public List<Coin> retornarTroco(int troco) {
-		for (Coin coin : Coin.reverse()) {
-			while (coin.getValue() <= troco) {
-				Factory.getCashBox().release(coin);
-				this.ltroco.add(coin);
-				troco -= coin.getValue();
+	public void retornarTroco(int trocor) {
+		
+		for (Coin moeda : this.troco) {
+			Factory.getCashBox().release(moeda);
 			}
 		}
-		return ltroco;
-	}
+		
+	
 	
 
-	public boolean planejamento(int troco) {
+	public boolean planejamento(int trocor) {
 		for (Coin coin : Coin.reverse()) {
-			if (coin.getValue() <= troco
-					&& this.Factory.getCashBox().count(coin) > 0) {
-				troco -= coin.getValue();
+			if (coin.getValue() <= trocor) {
+				 int count = Factory.getCashBox().count(coin);
+				while (coin.getValue() <= trocor && count > 0) {
+				trocor -= coin.getValue();
+				this.troco.add(coin);
+				}
 			}
-
 		}
-		return troco == 0;
+		return trocor == 0;
 
 	}
 
