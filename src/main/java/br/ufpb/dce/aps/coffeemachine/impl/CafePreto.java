@@ -8,7 +8,7 @@ import br.ufpb.dce.aps.coffeemachine.Messages;
 
 public class CafePreto extends Cafes {
 
-		protected ComponentsFactory factory;
+	
 		protected Dispenser cupDispenser;
 		protected Dispenser waterDispenser;
 		protected Dispenser coffeePowderDispenser;

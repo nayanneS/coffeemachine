@@ -8,12 +8,10 @@ import br.ufpb.dce.aps.coffeemachine.Messages;
 
 public class CafeWhiteSugar extends Cafes {
 			
-			protected ComponentsFactory factory;
+			
 			protected Dispenser cupDispenser;
 			protected Dispenser waterDispenser;
 			protected Dispenser coffeePowderDispenser;
-			protected Dispenser CreamerDispenser;
-			protected Dispenser SugarDispenser;
 			protected DrinkDispenser drinkDispenser;
 			protected Display display;
 	
@@ -23,12 +21,10 @@ public class CafeWhiteSugar extends Cafes {
 		cupDispenser = factory.getCupDispenser();
 		waterDispenser = factory.getWaterDispenser();
 		coffeePowderDispenser = factory.getCoffeePowderDispenser();
-		CreamerDispenser= factory.getCreamerDispenser();
-		SugarDispenser= factory.getSugarDispenser();
 		drinkDispenser = factory.getDrinkDispenser();
 		display = factory.getDisplay();
 	}
-	public void prepararCafe(MyCoffeeMachine meucafe, ComponentsFactory fac){
+	public void prepararCafe(MyCoffeeMachine meucafe, ComponentsFactory factory){
 			if (meucafe.calculaTroco() < 0) {
 				factory.getDisplay().warn(Messages.NO_ENOUGHT_MONEY);
 				meucafe.retirarMoedas(factory);
@@ -41,7 +37,7 @@ public class CafeWhiteSugar extends Cafes {
 			factory.getSugarDispenser().contains(1.5);
 			
 			if (!meucafe.planejamento(meucafe.calculaTroco())){
-				fac.getDisplay().warn(Messages.NO_ENOUGHT_CHANGE);
+				factory.getDisplay().warn(Messages.NO_ENOUGHT_CHANGE);
 				meucafe.retirarMoedas(factory);
 				factory.getDisplay().info(Messages.INSERT_COINS);
 				return;

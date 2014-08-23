@@ -7,22 +7,20 @@ import br.ufpb.dce.aps.coffeemachine.Messages;
 
 public class CafeWhite extends Cafes {
 			
-			protected ComponentsFactory factory;
+			
 			protected Dispenser cupDispenser;
 			protected Dispenser waterDispenser;
 			protected Dispenser coffeePowderDispenser;
-			protected Dispenser CreamerDispenser;
 			protected Display display;
 	
 	public void instanciarDispenser(){
 		cupDispenser = factory.getCupDispenser();
 		waterDispenser = factory.getWaterDispenser();
 		coffeePowderDispenser = factory.getCoffeePowderDispenser();
-		CreamerDispenser = factory.getCreamerDispenser();
 		display = factory.getDisplay();
 	}
 	
-	public void prepararCafe(MyCoffeeMachine meucafe, ComponentsFactory fac){
+	public void prepararCafe(MyCoffeeMachine meucafe, ComponentsFactory factory){
 			if (meucafe.calculaTroco() < 0) {
 				factory.getDisplay().warn(Messages.NO_ENOUGHT_MONEY);
 				meucafe.retirarMoedas(factory);
@@ -34,7 +32,7 @@ public class CafeWhite extends Cafes {
 			factory.getCreamerDispenser().contains(1.2);
 			
 			if (!meucafe.planejamento(meucafe.calculaTroco())){
-				fac.getDisplay().warn(Messages.NO_ENOUGHT_CHANGE);
+				factory.getDisplay().warn(Messages.NO_ENOUGHT_CHANGE);
 				meucafe.retirarMoedas(factory);
 				factory.getDisplay().info(Messages.INSERT_COINS);
 				return;
