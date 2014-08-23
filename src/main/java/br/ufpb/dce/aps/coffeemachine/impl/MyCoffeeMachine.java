@@ -6,142 +6,142 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.compor.frameworks.jcf.api.ComporFacade;
-import br.ufpb.dce.aps.coffeemachine.CashBox;
 import br.ufpb.dce.aps.coffeemachine.CoffeeMachine;
 import br.ufpb.dce.aps.coffeemachine.CoffeeMachineException;
 import br.ufpb.dce.aps.coffeemachine.Coin;
 import br.ufpb.dce.aps.coffeemachine.ComponentsFactory;
 import br.ufpb.dce.aps.coffeemachine.Drink;
 import br.ufpb.dce.aps.coffeemachine.Messages;
-import br.ufpb.dce.aps.coffeemachine.DrinkDispenser;
-import br.ufpb.dce.aps.coffeemachine.Display;
-import br.ufpb.dce.aps.coffeemachine.Dispenser;
+
 
 
 public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine {
 
 	private ComponentsFactory Factory;
-	private int inteiro;
-	private int centavos;
-	private CashBox cb;
-	private List<Coin> lista, ltroco, troco;
-	private Drink bebida;
+
+	private int geralCentavos=0;
+	private int[] troco = new int[6];
+	private List<Coin> moedas;
+	boolean condicao = true;
 	private final int cafe = 35;
 
 	public MyCoffeeMachine(ComponentsFactory factory) {
-		this.centavos = 0;
-		this.inteiro = 0;
+		this.geralCentavos = 0;
 		this.Factory = factory;
 		this.Factory.getDisplay().info("Insert coins and select a drink!");
-		this.cb = Factory.getCashBox();
-		this.lista = new ArrayList<Coin>();
-		this.ltroco = new ArrayList<Coin>();
-		this.troco = new ArrayList<Coin>();
+		this.moedas = new ArrayList<Coin>();
+		this.addComponents();
 	}
-
+	@Override
+	protected void addComponents() {
+		this.add(new CoffeeBlack(this.Factory));
+		this.add(new CoffeeBlackSugar(this.Factory));
+		this.add(new CoffeeWhite(this.Factory));
+		this.add(new CoffeeWhiteSugar(this.Factory));
+	}
+	
 	public void insertCoin(Coin coin) {
 
 		if (coin == null) {
-			throw new CoffeeMachineException("Moeda inválida.");
+			throw new CoffeeMachineException(" Moeda não aceita.");
 		}
-		inteiro += coin.getValue() / 100;
-		centavos += coin.getValue() % 100;
-		this.Factory.getDisplay().info(
-				"Total: US$" + " " + inteiro + "." + centavos);
-		this.lista.add(coin);
+		this.moedas.add(coin);
+		geralCentavos += coin.getValue();
+		Factory.getDisplay().info("Total: US$ " + geralCentavos / 100 + "." + geralCentavos % 100);
 	}
 
 	public void cancel() {
-		if (this.inteiro == 0 && this.centavos == 0) {
-			throw new CoffeeMachineException("Ausencia de moedas.");
+		if (this.geralCentavos == 0) {
+			throw new CoffeeMachineException("Não possui moedas inseridas");
 		}
-
 		this.Factory.getDisplay().warn(Messages.CANCEL);
-
-		retirarMoedas(Factory);
-
-		this.Factory.getDisplay().info(Messages.INSERT_COINS);
-
-		this.lista.clear();
+		this.retirarMoedas();
 	}
-	
-	 void retirarMoedas(ComponentsFactory factory) {
-		List<Integer> remover = new ArrayList<Integer>();
-
-		for (Coin coin : Coin.reverse()) {
-			for (int i = 0; i < this.lista.size(); i++) {
-				if (this.lista.get(i).equals(coin)) {
-					this.Factory.getCashBox().release(lista.get(i));
-					remover.add(new Integer(i));
-				}
-			}
+	private void limpaMoedas() {
+		this.moedas.clear();
 		}
-		this.lista.removeAll(remover);
-	 }
 	
-	
-	public void retornarTroco(int trocor) {
-		
-		for (Coin moeda : this.troco) {
-			Factory.getCashBox().release(moeda);
-			}
+	 public void retirarMoedas() {
+		 for (Coin rev : Coin.reverse()) {
+			 for (Coin aux : this.moedas) {
+				 if (aux == rev) {
+					 this.Factory.getCashBox().release(aux);
+				 }
+			 }
 		}
-		
-	
-	
-
-	public boolean planejamento(int trocor) {
-		for (Coin coin : Coin.reverse()) {
-			if (coin.getValue() <= trocor) {
-				 int count = Factory.getCashBox().count(coin);
-				while (coin.getValue() <= trocor && count > 0) {
-				trocor -= coin.getValue();
-				this.troco.add(coin);
-				}
-			}
-		}
-		return trocor == 0;
-
+			 		this.limpaMoedas();
+			 		this.Factory.getDisplay().info(Messages.INSERT_COINS);
 	}
 
-	public int calculaTroco() {
-		int contador = 0;
-		for (Coin c : this.lista) {
-			contador += c.getValue();
+	private int[] planejarTroco(int troco) throws CoffeeMachineException {
+		int i = 0;
+		for (Coin rev : Coin.reverse()) {
+			if (rev.getValue() <= troco && Factory.getCashBox().count(rev) > 0) {
+				while (rev.getValue() <= troco) {
+					troco -= rev.getValue();
+					this.troco[i]++;
+				}
+			}
+					i++;
 		}
-		return contador - this.cafe;
+		if (troco != 0) {
+			throw new CoffeeMachineException("");
+		}
+		return this.troco;
+	}
+	private void DevolverCoins(int[] quantCoin) {
+		for (int i = 0; i < quantCoin.length; i++) {
+			int count = quantCoin[i];
+			Coin coin = Coin.reverse()[i];
+				for (int j = 1; j <= count; j++) {
+					this.Factory.getCashBox().release(coin);
+				}
+		}
+	}
 
+	private int calcularTroco() {
+		int count = 0;
+			for (Coin rev : Coin.reverse()) {
+				for (Coin aux : this.moedas) {
+					if (aux == rev) {
+						count += aux.getValue();
+					}
+				}
+			}
+		return count - this.cafe;
 	}
 
 	
 		
 	public void select(Drink drink) {
-					
-		Cafes cafe = null;
-			
-	switch (drink) {
-					
-		case BLACK:
-		cafe = new CafePreto();
-		break;
-
-		case BLACK_SUGAR:
-		cafe = new CafePretoSugar();
-		break;
-		
-		case WHITE:
-		cafe = new CafeWhite();
-		break;
-		
-		
-		case WHITE_SUGAR:
-		cafe = new CafeWhiteSugar();
-		
+					    
+		if (calcularTroco() < 0) {
+			this.Factory.getDisplay().warn(Messages.NO_ENOUGHT_MONEY);
+			retirarMoedas();
+			return;
+		}
+			condicao = (Boolean) requestService("verifyDrinkType", drink);
+		if (!condicao) {
+			retirarMoedas();
+			return;
+		}
+		try {
+			troco = planejarTroco(calcularTroco());
+		}catch (Exception e) {
+			this.Factory.getDisplay().warn(Messages.NO_ENOUGHT_CHANGE);
+			retirarMoedas();
+			return;
+		}
+			this.Factory.getDisplay().info(Messages.MIXING);
+			requestService("selectDrinkType", drink);
+			requestService("releaseDrink");
+			DevolverCoins(troco);
+			this.limpaMoedas();
+			this.Factory.getDisplay().info(Messages.INSERT_COINS);
 	}
 		
-		cafe.prepararCafe(this, Factory);
-		lista.clear();
+		
 	}
 	
-}
+
 

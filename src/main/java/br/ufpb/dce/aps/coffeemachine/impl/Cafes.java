@@ -1,19 +1,50 @@
 package br.ufpb.dce.aps.coffeemachine.impl;
 
-import java.awt.Component;
 
-import br.ufpb.dce.aps.coffeemachine.ComponentsFactory;
 import br.ufpb.dce.aps.coffeemachine.Drink;
-
 import net.compor.frameworks.jcf.api.Service;
+import net.compor.frameworks.jcf.api.Component;
 
-public abstract  class Cafes {
+public abstract  class Cafes extends Component{
 	
 	
-	protected ComponentsFactory factory;
 	
-	public void instanciarDispenser(){}
+	public Cafes() {
+		super("Cafe");
+	}
 	
-	public void prepararCafe(MyCoffeeMachine meucafe, ComponentsFactory fac){}
-	
-}
+	@Service
+	public boolean verifyDrinkType(Drink drink) {
+		boolean condicao = false;
+			
+			if (drink.equals(Drink.BLACK)) {
+				condicao = (Boolean) requestService("verifyBlackDrink");
+			}
+			if (drink.equals(Drink.WHITE)) {
+				condicao = (Boolean) requestService("verifyWhiteDrink");
+			}
+			if (drink.equals(Drink.WHITE_SUGAR)) {
+				condicao = (Boolean) requestService("verifyWhiteSugarDrink");
+			}
+			if (drink.equals(Drink.BLACK_SUGAR)) {
+				condicao = (Boolean) requestService("verifyBlackSugarDrink");
+			}
+			return condicao;
+	}
+		
+	@Service
+	public void selectDrinkType(Drink drink) {
+			if (drink.equals(Drink.BLACK)) {
+				requestService("releaseBlackDrink");
+			}
+			if (drink.equals(Drink.BLACK_SUGAR)) {
+				requestService("releaseBlackSugarDrink");
+			}
+			if (drink.equals(Drink.WHITE)) {
+				requestService("releaseWhiteDrink");
+			}
+			if (drink.equals(Drink.WHITE_SUGAR)) {
+				requestService("releaseWhiteSugarDrink");
+			}
+		}
+		}
