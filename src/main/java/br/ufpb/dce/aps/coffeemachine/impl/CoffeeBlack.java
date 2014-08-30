@@ -23,7 +23,7 @@ public class CoffeeBlack extends Cafes {
 			this.factory.getDisplay().warn(Messages.OUT_OF_WATER);
 			return false;
 		}
-		if (!this.factory.getCoffeePowderDispenser().contains(100)) {
+		if (!this.factory.getCoffeePowderDispenser().contains(15)) {
 			this.factory.getDisplay().warn(Messages.OUT_OF_COFFEE_POWDER);
 			return false;
 		}
@@ -32,7 +32,7 @@ public class CoffeeBlack extends Cafes {
 	
 	@Service
 	public void releaseBlackDrink() {
-		this.factory.getCoffeePowderDispenser().release(100);
+		this.factory.getCoffeePowderDispenser().release(15);
 		this.factory.getWaterDispenser().release(100);
 	}
 	
