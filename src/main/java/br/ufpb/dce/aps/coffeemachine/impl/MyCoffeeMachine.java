@@ -15,139 +15,157 @@ import static org.mockito.Mockito.verify;
 
 public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine {
 
-	private ComponentsFactory Factory;
-
-	private int geralCentavos=0;
+	private ComponentsFactory factory;
+	private ArrayList<Coin> moedas;
 	private int[] troco = new int[6];
-	private List<Coin> moedas;
+	private int totalcentavos = 0;
 	boolean condicao = true;
-	private int cafe = 35;
+	private int CAFE = 35;
+	private String modo = "";
 
-	
 	@Override
 	protected void addComponents() {
-		this.add(new CoffeeBlack(this.Factory));
-		this.add(new CoffeeBlackSugar(this.Factory));
-		this.add(new CoffeeWhite(this.Factory));
-		this.add(new CoffeeWhiteSugar(this.Factory));
-		this.add(new CaldoDeSopaBoullion(this.Factory));
-	}
-	
-	public void insertCoin(Coin coin) {
 
+		this.add(new CoffeeBlack(this.factory));
+		this.add(new CoffeeBlackSugar(this.factory));
+		this.add(new CoffeeWhite(this.factory));
+		this.add(new CoffeeWhiteSugar(this.factory));
+		this.add(new CaldoDeSopaBoullion(this.factory));
+	}
+
+	public void insertCoin(Coin coin) {
+		if (this.modo.equals("cracha")) {
+			factory.getDisplay().warn(Messages.CAN_NOT_INSERT_COINS);
+			liberarMoedasCracha(factory, coin);
+			return;
+		}
 		if (coin == null) {
-			throw new CoffeeMachineException(" Moeda não aceita.");
+			throw new CoffeeMachineException("Moeda Não Aceita");
 		}
 		this.moedas.add(coin);
-		geralCentavos += coin.getValue();
-		Factory.getDisplay().info("Total: US$ " + geralCentavos / 100 + "." + geralCentavos % 100);
+		totalcentavos += coin.getValue();
+		factory.getDisplay()
+				.info("Total: US$ " + totalcentavos / 100 + "." + totalcentavos
+						% 100);
+	}
+
+	private void liberarMoedasCracha(ComponentsFactory factory, Coin coin) {
+		this.factory.getCashBox().release(coin);
+	}
+
+	public void setModo(String modo) {
+		this.modo = modo;
 	}
 
 	public void cancel() {
-		if (this.geralCentavos == 0) {
+		if (this.totalcentavos == 0) {
 			throw new CoffeeMachineException("Não possui moedas inseridas");
 		}
-		this.Factory.getDisplay().warn(Messages.CANCEL);
-		this.retirarMoedas();
+		this.factory.getDisplay().warn(Messages.CANCEL);
+		this.removerCoins();
 	}
+
 	private void limpaMoedas() {
 		this.moedas.clear();
+	}
+
+	private void removerCoins() {
+		for (Coin rev : Coin.reverse()) {
+			for (Coin aux : this.moedas) {
+				if (aux == rev) {
+					this.factory.getCashBox().release(aux);
+				}
+			}
 		}
-	
-	 public void retirarMoedas() {
-		 for (Coin rev : Coin.reverse()) {
-			 for (Coin aux : this.moedas) {
-				 if (aux == rev) {
-					 this.Factory.getCashBox().release(aux);
-				 }
-			 }
-		}
-			 		this.limpaMoedas();
-			 		this.Factory.getDisplay().info(Messages.INSERT_COINS);
+		this.limpaMoedas();
+		this.factory.getDisplay().info(Messages.INSERT_COINS);
 	}
 
 	private int[] planejarTroco(int troco) throws CoffeeMachineException {
 		int i = 0;
 		for (Coin rev : Coin.reverse()) {
-			if (rev.getValue() <= troco && Factory.getCashBox().count(rev) > 0) {
+			if (rev.getValue() <= troco && factory.getCashBox().count(rev) > 0) {
 				while (rev.getValue() <= troco) {
 					troco -= rev.getValue();
 					this.troco[i]++;
 				}
 			}
-					i++;
+			i++;
 		}
 		if (troco != 0) {
 			throw new CoffeeMachineException("");
 		}
 		return this.troco;
 	}
-	private void DevolverCoins(int[] quantCoin) {
+
+	private void releaseCoins(int[] quantCoin) {
 		for (int i = 0; i < quantCoin.length; i++) {
 			int count = quantCoin[i];
 			Coin coin = Coin.reverse()[i];
-				for (int j = 1; j <= count; j++) {
-					this.Factory.getCashBox().release(coin);
-				}
+
+			for (int j = 1; j <= count; j++) {
+				this.factory.getCashBox().release(coin);
+			}
 		}
 	}
 
 	private int calcularTroco() {
 		int count = 0;
-			for (Coin rev : Coin.reverse()) {
-				for (Coin aux : this.moedas) {
-					if (aux == rev) {
-						count += aux.getValue();
-					}
+		for (Coin rev : Coin.reverse()) {
+			for (Coin aux : this.moedas) {
+				if (aux == rev) {
+					count += aux.getValue();
 				}
 			}
-		return count - this.cafe;
+		}
+		return count - this.CAFE;
 	}
 
-	
-		
 	public void select(Drink drink) {
-		
-		if(drink.equals(Drink.BOUILLON)){
-			 this.cafe = 25;
+		if (drink.equals(Drink.BOUILLON)) {
+			this.CAFE = 25;
 		}
-					    
 		if (calcularTroco() < 0) {
-			this.Factory.getDisplay().warn(Messages.NO_ENOUGHT_MONEY);
-			retirarMoedas();
+			this.factory.getDisplay().warn(Messages.NO_ENOUGHT_MONEY);
+			removerCoins();
 			return;
 		}
 		condicao = (Boolean) requestService("verifyDrinkType", drink);
 		if (!condicao) {
-			retirarMoedas();
+			removerCoins();
 			return;
 		}
+
 		try {
 			troco = planejarTroco(calcularTroco());
-		}catch (Exception e) {
-			this.Factory.getDisplay().warn(Messages.NO_ENOUGHT_CHANGE);
-			retirarMoedas();
+		} catch (Exception e) {
+			this.factory.getDisplay().warn(Messages.NO_ENOUGHT_CHANGE);
+			removerCoins();
 			return;
 		}
-			this.Factory.getDisplay().info(Messages.MIXING);
-			requestService("selectDrinkType", drink);
-			requestService("releaseDrink");
-			DevolverCoins(troco);
-			this.limpaMoedas();
-			this.Factory.getDisplay().info(Messages.INSERT_COINS);
+		this.factory.getDisplay().info(Messages.MIXING);
+		requestService("selectDrinkType", drink);
+		requestService("releaseDrink");
+		releaseCoins(troco);
+
+		this.limpaMoedas();
+		this.factory.getDisplay().info(Messages.INSERT_COINS);
 	}
+
 	public void setFactory(ComponentsFactory factory) {
-			this.Factory = factory;
-			this.Factory.getDisplay().info(Messages.INSERT_COINS);
-			this.geralCentavos = 0;
-			this.moedas = new ArrayList<Coin>();
-			this.addComponents();
+		this.factory = factory;
+		this.factory.getDisplay().info(Messages.INSERT_COINS);
+		this.totalcentavos = 0;
+		this.moedas = new ArrayList<Coin>();
+		this.addComponents();
+	}
+
+	public void readBadge(int badgeCode) {
+		this.factory.getDisplay().info(Messages.BADGE_READ);
+		this.setModo("cracha");
+
 	}
 	
-	public void readBadge(int badgeCode) {
-		 	this.Factory.getDisplay().info(Messages.BADGE_READ);
-		
-	}
 }
 	
 
