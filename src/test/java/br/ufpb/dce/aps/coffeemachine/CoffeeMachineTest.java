@@ -567,9 +567,7 @@ public abstract class CoffeeMachineTest {
 		InOrder inOrder = prepareScenarioWithCoins(Coin.quarter);
 
 		// Simulating returns
-		doContain(bouillonDispenser, anyDouble());
-		doContain(waterDispenser, anyDouble());
-		doContain(cupDispenser, 1);
+		doContainBouillonIngredients();
 
 		// Operation under test
 		facade.select(Drink.BOUILLON);
@@ -580,6 +578,53 @@ public abstract class CoffeeMachineTest {
 		verifyDrinkRelease(inOrder);
 		verifyNewSession(inOrder);
 	}
+
+	private void doContainBouillonIngredients() {
+		doContain(bouillonDispenser, anyDouble());
+		doContain(waterDispenser, anyDouble());
+		doContain(cupDispenser, 1);
+	}
+	
+	@Test
+	public void selectBouillonWithChange() {
+		InOrder inOrder = prepareScenarioWithCoins(Coin.halfDollar);
+
+		// Simulating returns
+		doCount(Coin.quarter, 10);
+		doContainBouillonIngredients();
+
+		// Operation under test
+		facade.select(Drink.BOUILLON);
+
+		// Verification
+		verifyBouillonPlan(inOrder);
+		verifyCount(inOrder, Coin.quarter);
+		verifyBouillonMix(inOrder);
+		verifyDrinkRelease(inOrder);
+		verifyCloseSession(inOrder, Coin.quarter);
+	}
+	
+	@Test
+	public void selectBouillonWithoutBouillonPowder() {
+		InOrder inOrder = prepareScenarioWithCoins(Coin.quarter);
+
+		// Simulating returns
+		doNotContain(bouillonDispenser, anyDouble()); // Out of Bouillon
+															// powder!
+		doContain(waterDispenser, anyDouble());
+		doContain(cupDispenser, 1);
+
+		// Operation under test
+		facade.select(Drink.BOUILLON);
+
+		// Verification
+		inOrder.verify(cupDispenser).contains(1);
+		inOrder.verify(waterDispenser).contains(100);
+		inOrder.verify(bouillonDispenser).contains(10);
+		verifyOutOfIngredient(inOrder, Messages.OUT_OF_BOUILLON_POWDER,
+				Coin.quarter);
+	}
+	
 
 	private void verifyBouillonPlan(InOrder inOrder) {
 		inOrder.verify(cupDispenser).contains(1);
