@@ -23,7 +23,7 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine {
 	private int[] troco = new int[6];
 	private List<Coin> moedas;
 	boolean condicao = true;
-	private final int cafe = 35;
+	private int cafe = 35;
 
 	public MyCoffeeMachine(ComponentsFactory factory) {
 		this.geralCentavos = 0;
@@ -38,6 +38,7 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine {
 		this.add(new CoffeeBlackSugar(this.Factory));
 		this.add(new CoffeeWhite(this.Factory));
 		this.add(new CoffeeWhiteSugar(this.Factory));
+		this.add(new CaldoDeSopaBoullion(this.Factory));
 	}
 	
 	public void insertCoin(Coin coin) {
@@ -114,13 +115,17 @@ public class MyCoffeeMachine extends ComporFacade implements CoffeeMachine {
 	
 		
 	public void select(Drink drink) {
+		
+		if(drink.equals(Drink.BOUILLON)){
+			 this.cafe = 25;
+		}
 					    
 		if (calcularTroco() < 0) {
 			this.Factory.getDisplay().warn(Messages.NO_ENOUGHT_MONEY);
 			retirarMoedas();
 			return;
 		}
-			condicao = (Boolean) requestService("verifyDrinkType", drink);
+		condicao = (Boolean) requestService("verifyDrinkType", drink);
 		if (!condicao) {
 			retirarMoedas();
 			return;

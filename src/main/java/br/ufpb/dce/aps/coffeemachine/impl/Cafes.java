@@ -1,12 +1,11 @@
 package br.ufpb.dce.aps.coffeemachine.impl;
 
-
+import br.ufpb.dce.aps.coffeemachine.ComponentsFactory;
 import br.ufpb.dce.aps.coffeemachine.Drink;
 import net.compor.frameworks.jcf.api.Service;
 import net.compor.frameworks.jcf.api.Component;
 
 public abstract  class Cafes extends Component{
-	
 	
 	
 	public Cafes() {
@@ -29,6 +28,9 @@ public abstract  class Cafes extends Component{
 			if (drink.equals(Drink.BLACK_SUGAR)) {
 				condicao = (Boolean) requestService("verifyBlackSugarDrink");
 			}
+			if(drink.equals(Drink.BOUILLON)){
+				condicao = (Boolean) requestService("VerificaDrinkBouillon");
+				}
 			return condicao;
 	}
 		
@@ -46,5 +48,8 @@ public abstract  class Cafes extends Component{
 			if (drink.equals(Drink.WHITE_SUGAR)) {
 				requestService("releaseWhiteSugarDrink");
 			}
+			if (drink.equals(Drink.BOUILLON)) {
+				requestService("releaseBouillon");
+			}	
 		}
-		}
+}
