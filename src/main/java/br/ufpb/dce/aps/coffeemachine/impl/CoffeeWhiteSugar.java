@@ -29,7 +29,10 @@ public class CoffeeWhiteSugar extends CoffeeBlack  {
 			this.factory.getDisplay().warn(Messages.OUT_OF_CREAMER);
 			return false;
 			}
-			factory.getSugarDispenser().contains(100);
+		if (!this.factory.getSugarDispenser().contains(5)) {
+			this.factory.getDisplay().warn(Messages.OUT_OF_SUGAR);
+			return false;
+			}
 			return true;
 		}
 			
@@ -39,7 +42,7 @@ public class CoffeeWhiteSugar extends CoffeeBlack  {
 		this.factory.getCoffeePowderDispenser().release(15);
 		this.factory.getWaterDispenser().release(80);
 		this.factory.getCreamerDispenser().release(20);;
-		factory.getSugarDispenser().release(100);
+		this.factory.getSugarDispenser().release(5);
 	}
 
 }
