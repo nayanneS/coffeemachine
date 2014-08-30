@@ -20,7 +20,10 @@ public class CaldoDeSopaBoullion extends CoffeeBlack {
 				this.factory.getDisplay().warn(Messages.OUT_OF_WATER);
 				return false;
 			}
-				this.factory.getBouillonDispenser().contains(10);
+			if(!this.factory.getBouillonDispenser().contains(10)){
+				this.factory.getDisplay().warn(Messages.OUT_OF_BOUILLON_POWDER);
+				return false;
+			}
 				return true;
 	}
 	@Service
